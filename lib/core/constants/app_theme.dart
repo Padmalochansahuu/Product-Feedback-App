@@ -2,44 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Color Palette
-  static const Color primaryColor = Color(0xFF6366F1); // Indigo
+  static const Color primaryColor = Color(0xFF6366F1);
   static const Color primaryDark = Color(0xFF4F46E5);
-  static const Color secondaryColor = Color(0xFF10B981); // Emerald
-  static const Color accentColor = Color(0xFFF59E0B); // Amber
+  static const Color secondaryColor = Color(0xFF10B981);
+  static const Color accentColor = Color(0xFFF59E0B);
   static const Color backgroundColor = Color(0xFFF8FAFC);
   static const Color surfaceColor = Color(0xFFFFFFFF);
   static const Color cardColor = Color(0xFFFFFFFF);
   static const Color errorColor = Color(0xFFEF4444);
   static const Color successColor = Color(0xFF10B981);
   static const Color warningColor = Color(0xFFF59E0B);
-  
-  // Text Colors
+
   static const Color textPrimary = Color(0xFF1F2937);
   static const Color textSecondary = Color(0xFF6B7280);
   static const Color textLight = Color(0xFF9CA3AF);
   static const Color textOnPrimary = Color(0xFFFFFFFF);
-  
-  // Gradients
+
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-  
+
   static const LinearGradient backgroundGradient = LinearGradient(
     colors: [Color(0xFFF8FAFC), Color(0xFFE2E8F0)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
-  
+
   static const LinearGradient cardGradient = LinearGradient(
     colors: [Color(0xFFFFFFFF), Color(0xFFFAFAFA)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  // Shadows
   static List<BoxShadow> cardShadow = [
     BoxShadow(
       color: Colors.black.withOpacity(0.08),
@@ -61,13 +57,11 @@ class AppTheme {
     ),
   ];
 
-  // Border Radius
   static const BorderRadius smallRadius = BorderRadius.all(Radius.circular(8));
   static const BorderRadius mediumRadius = BorderRadius.all(Radius.circular(12));
   static const BorderRadius largeRadius = BorderRadius.all(Radius.circular(16));
   static const BorderRadius xlRadius = BorderRadius.all(Radius.circular(24));
 
-  // Theme Data
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
@@ -83,8 +77,6 @@ class AppTheme {
         onBackground: textPrimary,
         onSurface: textPrimary,
       ),
-      
-      // AppBar Theme
       appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: true,
@@ -97,16 +89,12 @@ class AppTheme {
         ),
         iconTheme: const IconThemeData(color: textOnPrimary),
       ),
-      
-      // Card Theme
       cardTheme: CardThemeData(
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: largeRadius),
         color: cardColor,
         shadowColor: Colors.black.withOpacity(0.08),
       ),
-      
-      // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: 0,
@@ -120,8 +108,6 @@ class AppTheme {
           ),
         ),
       ),
-      
-      // Outlined Button Theme
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: primaryColor,
@@ -134,8 +120,6 @@ class AppTheme {
           ),
         ),
       ),
-      
-      // Text Button Theme
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: primaryColor,
@@ -147,8 +131,6 @@ class AppTheme {
           ),
         ),
       ),
-      
-      // Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: backgroundColor,
@@ -179,8 +161,6 @@ class AppTheme {
           fontSize: 14,
         ),
       ),
-      
-      // Text Themes
       textTheme: TextTheme(
         displayLarge: GoogleFonts.inter(
           fontSize: 32,
@@ -237,11 +217,10 @@ class AppTheme {
   }
 }
 
-// Custom Widgets
 class GradientBackground extends StatelessWidget {
   final Widget child;
   final Gradient? gradient;
-  
+
   const GradientBackground({
     Key? key,
     required this.child,
@@ -264,7 +243,7 @@ class GlassCard extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final BorderRadius? borderRadius;
-  
+
   const GlassCard({
     Key? key,
     required this.child,
@@ -305,7 +284,7 @@ class AnimatedButton extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final BorderRadius? borderRadius;
   final bool isLoading;
-  
+
   const AnimatedButton({
     Key? key,
     this.onPressed,
@@ -321,8 +300,7 @@ class AnimatedButton extends StatefulWidget {
   _AnimatedButtonState createState() => _AnimatedButtonState();
 }
 
-class _AnimatedButtonState extends State<AnimatedButton>
-    with SingleTickerProviderStateMixin {
+class _AnimatedButtonState extends State<AnimatedButton> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 

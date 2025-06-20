@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:feedback_app/auth_service.dart';
-import 'package:feedback_app/feedback_model.dart';
+import 'package:feedback_app/core/models/feedback_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -34,13 +33,15 @@ class AppController extends GetxController {
     if (currentUser == null) {
       feedbackList.clear();
       _clearAnalytics();
+    } else {
+      _loadFeedbackFromCache();
     }
   }
 
   Future<void> login(String email, String password) async {
     isLoading.value = true;
     try {
-      await Get.find<AuthService>().login(email, password);
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
       await _loadFeedbackFromCache();
     } finally {
       isLoading.value = false;
@@ -48,7 +49,7 @@ class AppController extends GetxController {
   }
 
   Future<void> logout() async {
-    await Get.find<AuthService>().logout();
+    await _auth.signOut();
   }
 
   Future<void> pickImage() async {
@@ -182,7 +183,6 @@ class AppController extends GetxController {
   Map<int, int> getRatingDistribution() {
     final Map<int, int> distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
     for (var feedback in feedbackList) {
-      // Ensure rating is treated as double and floor it to get the integer part
       final rating = feedback.rating.floor();
       if (distribution.containsKey(rating)) {
         distribution[rating] = (distribution[rating] ?? 0) + 1;

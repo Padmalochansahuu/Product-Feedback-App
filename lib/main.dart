@@ -1,20 +1,22 @@
-import 'package:feedback_app/admin_screen.dart';
-import 'package:feedback_app/auth_service.dart';
-import 'package:feedback_app/feedback_controller.dart';
-import 'package:feedback_app/user_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:feedback_app/core/screens/admin/admin_screen.dart';
+import 'package:feedback_app/core/screens/user/login_screen.dart';
+import 'package:feedback_app/core/screens/user/register_screen.dart';
+import 'package:feedback_app/core/screens/user/user_feedback_screen.dart';
+import 'package:feedback_app/core/services/auth_service.dart';
+import 'package:feedback_app/core/services/feedback_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Initialize services
   Get.put(AuthService());
   Get.put(AppController());
-  await Get.find<AuthService>().setupPredefinedUsers();
+
   runApp(const MyApp());
 }
 
@@ -42,7 +44,12 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: const Root(),
+      initialRoute: '/',
+      getPages: [
+        GetPage(name: '/', page: () => const Root()),
+        GetPage(name: '/login', page: () => const LoginPage()),
+        GetPage(name: '/register', page: () => const RegisterPage()),
+      ],
     );
   }
 }
@@ -50,16 +57,15 @@ class MyApp extends StatelessWidget {
 class Root extends StatelessWidget {
   const Root({super.key});
 
-  final String adminEmail = 'admin@gmail.com';
-
   @override
   Widget build(BuildContext context) {
-    final AppController controller = Get.find();
+    final AuthService authService = Get.find();
 
     return Obx(() {
-      if (controller.user.value == null) {
+      final user = authService.user.value;
+      if (user == null) {
         return const LoginPage();
-      } else if (controller.user.value!.email == adminEmail) {
+      } else if (authService.isAdmin()) {
         return const AdminScreen();
       } else {
         return const UserFeedbackScreen();

@@ -1,292 +1,12 @@
-import 'package:feedback_app/feedback_controller.dart';
-import 'package:feedback_app/feedback_model.dart';
-import 'package:feedback_app/theme.dart';
+import 'package:feedback_app/core/constants/app_theme.dart';
+import 'package:feedback_app/core/models/feedback_model.dart';
+import 'package:feedback_app/core/services/auth_service.dart';
+import 'package:feedback_app/core/services/feedback_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
-
-class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return GetX<AppController>(
-      builder: (controller) {
-        return controller.user.value == null
-            ? const LoginPage()
-            : const UserFeedbackScreen();
-      },
-    );
-  }
-}
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
-  final AppController controller = Get.find();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-
-  late AnimationController _fadeController;
-  late AnimationController _slideController;
-
-  @override
-  void initState() {
-    super.initState();
-    _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    );
-    _slideController = AnimationController(
-      duration: const Duration(milliseconds: 1200),
-      vsync: this,
-    );
-
-    _fadeController.forward();
-    _slideController.forward();
-  }
-
-  @override
-  void dispose() {
-    _fadeController.dispose();
-    _slideController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
-    return Scaffold(
-      body: GradientBackground(
-        gradient: AppTheme.primaryGradient,
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Container(
-              height: size.height - MediaQuery.of(context).padding.top,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  const Spacer(flex: 1),
-
-                  // Logo and Title Section
-                  FadeTransition(
-                    opacity: _fadeController,
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: AppTheme.xlRadius,
-                            boxShadow: AppTheme.elevatedShadow,
-                          ),
-                          child: const Icon(
-                            Icons.feedback_rounded,
-                            size: 60,
-                            color: AppTheme.primaryColor,
-                          ),
-                        ).animate().scale(
-                              duration: 800.ms,
-                              curve: Curves.elasticOut,
-                            ),
-                        const SizedBox(height: 32),
-                        Text(
-                          'FeedbackPro',
-                          style:
-                              Theme.of(context).textTheme.displayMedium?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                        ).animate().fadeIn(delay: 200.ms).slideY(
-                              begin: 0.3,
-                              duration: 600.ms,
-                              curve: Curves.easeOut,
-                            ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Share your thoughts, shape the future',
-                          style:
-                              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: Colors.white.withOpacity(0.9),
-                                  ),
-                          textAlign: TextAlign.center,
-                        ).animate().fadeIn(delay: 400.ms).slideY(
-                              begin: 0.3,
-                              duration: 600.ms,
-                              curve: Curves.easeOut,
-                            ),
-                      ],
-                    ),
-                  ),
-
-                  const Spacer(flex: 1),
-
-                  // Login Form
-                  SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, 0.5),
-                      end: Offset.zero,
-                    ).animate(CurvedAnimation(
-                      parent: _slideController,
-                      curve: Curves.easeOutCubic,
-                    )),
-                    child: GlassCard(
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              'Welcome Back',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Sign in to continue your feedback journey',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 32),
-
-                            // Email Field
-                            TextFormField(
-                              controller: emailController,
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: InputDecoration(
-                                labelText: 'Email Address',
-                                prefixIcon: Container(
-                                  margin: const EdgeInsets.all(12),
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        AppTheme.primaryColor.withOpacity(0.1),
-                                    borderRadius: AppTheme.smallRadius,
-                                  ),
-                                  child: const Icon(
-                                    Icons.email_outlined,
-                                    color: AppTheme.primaryColor,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value?.isEmpty ?? true) {
-                                  return 'Please enter your email';
-                                }
-                                if (!GetUtils.isEmail(value!)) {
-                                  return 'Please enter a valid email';
-                                }
-                                return null;
-                              },
-                            ).animate().slideX(
-                                  delay: 600.ms,
-                                  duration: 400.ms,
-                                  begin: -0.2,
-                                ),
-
-                            const SizedBox(height: 20),
-
-                            // Password Field
-                            TextFormField(
-                              controller: passwordController,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                labelText: 'Password',
-                                prefixIcon: Container(
-                                  margin: const EdgeInsets.all(12),
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        AppTheme.primaryColor.withOpacity(0.1),
-                                    borderRadius: AppTheme.smallRadius,
-                                  ),
-                                  child: const Icon(
-                                    Icons.lock_outline,
-                                    color: AppTheme.primaryColor,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value?.isEmpty ?? true) {
-                                  return 'Please enter your password';
-                                }
-                                if (value!.length < 6) {
-                                  return 'Password must be at least 6 characters';
-                                }
-                                return null;
-                              },
-                            ).animate().slideX(
-                                  delay: 700.ms,
-                                  duration: 400.ms,
-                                  begin: 0.2,
-                                ),
-
-                            const SizedBox(height: 32),
-
-                            // Login Button
-                            Obx(() => AnimatedButton(
-                                  onPressed: controller.isLoading.value
-                                      ? null
-                                      : () {
-                                          if (_formKey.currentState!
-                                              .validate()) {
-                                            controller.login(
-                                              emailController.text,
-                                              passwordController.text,
-                                            );
-                                          }
-                                        },
-                                  isLoading: controller.isLoading.value,
-                                  child: Text(
-                                    'Sign In',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                  ),
-                                )).animate().slideY(
-                                  delay: 800.ms,
-                                  duration: 400.ms,
-                                  begin: 0.3,
-                                ),
-                                ],
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const Spacer(flex: 1),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class UserFeedbackScreen extends StatefulWidget {
   const UserFeedbackScreen({super.key});
@@ -298,6 +18,7 @@ class UserFeedbackScreen extends StatefulWidget {
 class _UserFeedbackScreenState extends State<UserFeedbackScreen>
     with TickerProviderStateMixin {
   final AppController controller = Get.find();
+  final AuthService authService = Get.find();
   final commentController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   double currentRating = 3.0;
@@ -337,7 +58,6 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
       body: GradientBackground(
         child: CustomScrollView(
           slivers: [
-            // Custom App Bar
             SliverAppBar(
               expandedHeight: 180,
               floating: false,
@@ -415,13 +135,10 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
                 ),
               ],
             ),
-
-            // Content
             SliverPadding(
               padding: const EdgeInsets.all(24),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  // Welcome Card
                   SlideTransition(
                     position: Tween<Offset>(
                       begin: const Offset(0, 0.3),
@@ -432,10 +149,7 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
                     )),
                     child: _buildWelcomeCard(),
                   ),
-
                   const SizedBox(height: 24),
-
-                  // Feedback Form Card
                   SlideTransition(
                     position: Tween<Offset>(
                       begin: const Offset(0, 0.5),
@@ -446,8 +160,7 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
                     )),
                     child: _buildFeedbackCard(),
                   ),
-
-                  const SizedBox(height: 100), // Bottom spacing
+                  const SizedBox(height: 100),
                 ]),
               ),
             ),
@@ -498,7 +211,7 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  controller.user.value?.email ?? 'User',
+                  authService.user.value?.email ?? 'User',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -585,19 +298,14 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
                 ),
               ],
             ),
-
             const SizedBox(height: 32),
-
-            // Rating Section
             Text(
               'How would you rate your experience?',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
             ).animate().fadeIn(delay: 200.ms),
-
             const SizedBox(height: 16),
-
             Center(
               child: Column(
                 children: [
@@ -632,9 +340,7 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
                         duration: 600.ms,
                         curve: Curves.elasticOut,
                       ),
-
                   const SizedBox(height: 12),
-
                   Text(
                     _getRatingText(currentRating),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -645,19 +351,14 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
                 ],
               ),
             ),
-
             const SizedBox(height: 32),
-
-            // Comment Section
             Text(
               'Tell us more about your experience',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
             ).animate().fadeIn(delay: 500.ms),
-
             const SizedBox(height: 16),
-
             TextFormField(
               controller: commentController,
               maxLines: 4,
@@ -693,10 +394,7 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
                   duration: 400.ms,
                   begin: 0.3,
                 ),
-
             const SizedBox(height: 24),
-
-            // Image Upload Section
             Obx(() {
               if (controller.pickedImage.value != null) {
                 return Column(
@@ -708,6 +406,13 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
                         height: 150,
                         width: double.infinity,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          height: 150,
+                          color: Colors.grey.shade100,
+                          child: const Center(
+                            child: Icon(Icons.broken_image, color: Colors.grey),
+                          ),
+                        ),
                       ),
                     ),
                     TextButton(
@@ -732,10 +437,7 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
                 );
               }
             }).animate().fadeIn(delay: 600.ms),
-
             const SizedBox(height: 32),
-
-            // Submit Button
             Obx(() => AnimatedButton(
                   onPressed: controller.isLoading.value
                       ? null
@@ -764,10 +466,7 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
                   duration: 400.ms,
                   begin: 0.3,
                 ),
-
             const SizedBox(height: 16),
-
-            // Recent Feedbacks Section
             Obx(() {
               if (controller.feedbackList.isNotEmpty) {
                 return Column(
@@ -782,7 +481,7 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
                     ),
                     const SizedBox(height: 16),
                     ...controller.feedbackList
-                        .where((f) => f.userId == controller.user.value?.uid)
+                        .where((f) => f.userId == authService.user.value?.uid)
                         .take(3)
                         .map((feedback) => _buildFeedbackItem(feedback))
                         .toList(),
@@ -814,7 +513,6 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
         children: [
           Row(
             children: [
-              // Rating Stars
               Row(
                 children: List.generate(5, (index) {
                   return Icon(
@@ -868,7 +566,6 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
             comment: commentController.text.trim(),
           )
           .then((_) {
-        // Clear form after successful submission
         commentController.clear();
         setState(() {
           currentRating = 3.0;
@@ -936,7 +633,7 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
                     child: ElevatedButton(
                       onPressed: () {
                         Get.back();
-                        controller.logout();
+                        authService.logout();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.errorColor,
@@ -953,7 +650,3 @@ class _UserFeedbackScreenState extends State<UserFeedbackScreen>
     );
   }
 }
-
-
-
-
