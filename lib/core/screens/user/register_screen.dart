@@ -21,7 +21,6 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
 
   late AnimationController _fadeController;
   late AnimationController _slideController;
-  late TabController _tabController;
 
   @override
   void initState() {
@@ -34,7 +33,6 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
-    _tabController = TabController(length: 2, vsync: this);
 
     _fadeController.forward();
     _slideController.forward();
@@ -44,7 +42,6 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
   void dispose() {
     _fadeController.dispose();
     _slideController.dispose();
-    _tabController.dispose();
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
@@ -53,22 +50,121 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
 
   Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
-      try {
-        await authService.register(
-          email: emailController.text,
-          password: passwordController.text,
-          role: _selectedRole.value,
-        );
-        // Clear form fields
+      final success = await authService.register(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+        role: _selectedRole.value,
+      );
+      
+      if (success) {
+        // Clear form fields on successful registration
         emailController.clear();
         passwordController.clear();
         confirmPasswordController.clear();
-        // Redirect to login page after successful registration
-        Get.offNamed('/login');
-      } catch (e) {
-        // Error handling is already managed in authService.register
+        
+        // Navigate to login screen - handled by AuthService
+        Get.offAllNamed('/login');
       }
     }
+  }
+
+  Widget _buildRoleSelector() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: AppTheme.largeRadius,
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Obx(() => GestureDetector(
+              onTap: () => _selectedRole.value = 'User',
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: _selectedRole.value == 'User'
+                      ? AppTheme.primaryColor
+                      : Colors.transparent,
+                  borderRadius: AppTheme.mediumRadius,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.person_outline,
+                      color: _selectedRole.value == 'User'
+                          ? Colors.white
+                          : Colors.grey[600],
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'User',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: _selectedRole.value == 'User'
+                            ? Colors.white
+                            : Colors.grey[600],
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Obx(() => GestureDetector(
+              onTap: () => _selectedRole.value = 'Admin',
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: _selectedRole.value == 'Admin'
+                      ? AppTheme.primaryColor
+                      : Colors.transparent,
+                  borderRadius: AppTheme.mediumRadius,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.admin_panel_settings_outlined,
+                      color: _selectedRole.value == 'Admin'
+                          ? Colors.white
+                          : Colors.grey[600],
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Admin',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: _selectedRole.value == 'Admin'
+                            ? Colors.white
+                            : Colors.grey[600],
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )),
+          ),
+        ],
+      ),
+    ).animate().slideY(
+          delay: 500.ms,
+          duration: 400.ms,
+          begin: 0.2,
+        );
   }
 
   @override
@@ -136,31 +232,6 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: AppTheme.largeRadius,
-                      border: Border.all(color: Colors.white.withOpacity(0.2)),
-                    ),
-                    child: TabBar(
-                      controller: _tabController,
-                      indicator: null, // Removed the white moving circle indicator
-                      labelColor: const Color.fromARGB(255, 0, 0, 0),
-                      unselectedLabelColor: Colors.white.withOpacity(0.7),
-                      labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
-                      tabs: const [
-                        Tab(text: 'User'),
-                        Tab(text: 'Admin'),
-                      ],
-                      onTap: (index) {
-                        _selectedRole.value = index == 0 ? 'User' : 'Admin';
-                      },
-                    ),
-                  ),
                   const Spacer(flex: 1),
                   SlideTransition(
                     position: Tween<Offset>(
@@ -177,7 +248,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Text(
-                              'Create ${_selectedRole.value} Account',
+                              'Create Account',
                               style: Theme.of(context)
                                   .textTheme
                                   .headlineMedium
@@ -188,14 +259,28 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Sign up to start your ${_selectedRole.value.toLowerCase()} journey',
+                              'Sign up to start your feedback journey',
                               style: Theme.of(context).textTheme.bodyMedium,
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: 32),
+                            const SizedBox(height: 24),
+                            
+                            // Role Selection
+                            Text(
+                              'Select Role',
+                              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            _buildRoleSelector(),
+                            const SizedBox(height: 24),
+                            
                             TextFormField(
                               controller: emailController,
                               keyboardType: TextInputType.emailAddress,
+                              autocorrect: false,
                               decoration: InputDecoration(
                                 labelText: 'Email Address',
                                 prefixIcon: Container(
@@ -217,7 +302,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                                 if (value?.isEmpty ?? true) {
                                   return 'Please enter your email';
                                 }
-                                if (!GetUtils.isEmail(value!)) {
+                                if (!GetUtils.isEmail(value!.trim())) {
                                   return 'Please enter a valid email';
                                 }
                                 return null;
@@ -303,16 +388,16 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                                       ? null
                                       : _handleRegister,
                                   isLoading: authService.isLoading.value,
-                                  child: Text(
-                                    'Sign Up as ${_selectedRole.value}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                  ),
+                                  child: Obx(() => Text(
+                                        'Create ${_selectedRole.value} Account',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      )),
                                 )).animate().slideY(
                                   delay: 900.ms,
                                   duration: 400.ms,

@@ -1,8 +1,9 @@
-
 import 'package:feedback_app/core/constants/app_theme.dart';
 import 'package:feedback_app/core/screens/admin/widgets/advanced_feedback_card.dart';
 import 'package:feedback_app/core/screens/admin/widgets/analytics_dashboard.dart';
+import 'package:feedback_app/core/services/auth_service.dart';
 import 'package:feedback_app/core/services/feedback_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -30,6 +31,15 @@ class _AdminScreenState extends State<AdminScreen> with TickerProviderStateMixin
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
     _animationController.forward();
+
+    // Listen for user state changes to redirect to login if signed out
+    final AuthService authService = Get.find<AuthService>();
+    ever(authService.user, (User? user) {
+      if (user == null) {
+        print('User signed out, redirecting to login...');
+        Get.offAllNamed('/login');
+      }
+    });
   }
 
   @override
@@ -41,7 +51,8 @@ class _AdminScreenState extends State<AdminScreen> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final AppController controller = Get.find();
+    final AuthService authService = Get.find<AuthService>();
+    Get.find<AppController>();
 
     return Scaffold(
       body: GradientBackground(
@@ -49,7 +60,7 @@ class _AdminScreenState extends State<AdminScreen> with TickerProviderStateMixin
         child: SafeArea(
           child: Column(
             children: [
-              _buildHeader(controller),
+              _buildHeader(authService),
               _buildTabBar(),
               Expanded(
                 child: FadeTransition(
@@ -70,7 +81,7 @@ class _AdminScreenState extends State<AdminScreen> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildHeader(AppController controller) {
+  Widget _buildHeader(AuthService authService) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -106,7 +117,9 @@ class _AdminScreenState extends State<AdminScreen> with TickerProviderStateMixin
             ),
           ),
           AnimatedButton(
-            onPressed: () => controller.logout(),
+            onPressed: () async {
+              await authService.logout();
+            },
             backgroundColor: Colors.white.withOpacity(0.2),
             child: const Row(
               mainAxisSize: MainAxisSize.min,

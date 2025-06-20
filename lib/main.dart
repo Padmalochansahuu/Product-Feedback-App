@@ -1,3 +1,4 @@
+import 'package:feedback_app/auth_wrapper.dart';
 import 'package:feedback_app/core/screens/admin/admin_screen.dart';
 import 'package:feedback_app/core/screens/user/login_screen.dart';
 import 'package:feedback_app/core/screens/user/register_screen.dart';
@@ -46,30 +47,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       getPages: [
-        GetPage(name: '/', page: () => const Root()),
+        GetPage(name: '/', page: () => const AuthWrapper()),
         GetPage(name: '/login', page: () => const LoginPage()),
         GetPage(name: '/register', page: () => const RegisterPage()),
+        GetPage(name: '/admin', page: () => const AdminScreen()),
+        GetPage(name: '/user', page: () => const UserFeedbackScreen()),
       ],
     );
-  }
-}
-
-class Root extends StatelessWidget {
-  const Root({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final AuthService authService = Get.find();
-
-    return Obx(() {
-      final user = authService.user.value;
-      if (user == null) {
-        return const LoginPage();
-      } else if (authService.isAdmin()) {
-        return const AdminScreen();
-      } else {
-        return const UserFeedbackScreen();
-      }
-    });
   }
 }
