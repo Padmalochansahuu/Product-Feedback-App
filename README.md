@@ -1,4 +1,4 @@
-# 📝 Product Feedback App – Flutter + Firebase
+# 📝 Product Feedback App – Flutter
 
 ## 📱 Overview
 This is a full-featured product feedback app built using **Flutter**, **Firebase**, and **GetX** .
