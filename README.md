@@ -1,16 +1,37 @@
-# feedback_app
+# 📝 Product Feedback App – Flutter + Firebase
 
-A new Flutter project.
+## 📱 Overview
+This is a full-featured product feedback app built using **Flutter**, **Firebase**, and **GetX** .
+It allows users to submit feedback and enables admins to view real-time analytics.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 👤 User Credentials
+- **User:**  ID - `user@gmail.com` Password- `123456`
+- **Admin:** ID - `admin@gmail.com` Password- `1234567`
 
-A few resources to get you started if this is your first Flutter project:
+---
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## ✨ Features
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 🎨 Modern UI
+- Gradient backgrounds & glass morphism cards
+- Smooth animations using `flutter_animate`
+- Accessible typography with Google Fonts (Inter)
+
+### 🧑‍💻 User Side
+- Firebase Auth (Email/Password)
+- Animated welcome card with user info
+- Interactive rating system (1-5 stars)
+- Text comment input with validation
+- Optional screenshot/image upload
+- Recent feedback history display
+- Elegant logout confirmation
+
+### 🛠️ Admin Side
+- Admin authentication
+- Total reviews, average rating, 4⭐/5⭐ % stats
+- Top contributors widget
+- Rating distribution chart
+- Expandable feedback cards with image preview
+- Search functionality and UI interactivity
