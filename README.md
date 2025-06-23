@@ -62,5 +62,13 @@ Developed using **Flutter**, **Firebase**, and **GetX**, it supports role-based 
 - **Styling:** Custom theme with gradients, Google Fonts (Inter), and Material 3
 - **Image Upload:** image_picker
 
+## 📩 Contact
 
+If you like the design ..  feel free to contact me:
+
+**📧 Email:** sahupadmalochan209@gmail.com
+
+---
+
+Thank you! ⭐ If you like this project, give it a star and follow for more design drops and app UI kits.
 
